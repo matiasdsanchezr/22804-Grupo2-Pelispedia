@@ -1,8 +1,6 @@
-import React from 'react';
-// import { useState } from 'react';
-// import { useAuth } from '../Contexts/AuthContext';
-import { FavoritosGrid } from '../Components/FavoritosGrid';
 import { Helmet } from 'react-helmet-async';
+
+import { FavoritosGrid } from '../Components/FavoritosGrid';
 
 function Favoritos() {
   return (
@@ -13,7 +11,7 @@ function Favoritos() {
         <meta name="description" content="pagina de peliculas favoritas " />
       </Helmet>
 
-      <FavoritosGrid></FavoritosGrid>
+      <FavoritosGrid />
     </>
   );
 }

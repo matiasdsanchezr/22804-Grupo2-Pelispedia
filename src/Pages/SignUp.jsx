@@ -1,6 +1,7 @@
-import React, { useRef, useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
-import { Link, Navigate } from 'react-router-dom';
+import { useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
+
 import { useAuth } from '../Contexts/AuthContext';
 import authErrors from '../data/authErrors';
 import styles from '../Styles/SignUp.module.css';
@@ -16,9 +17,6 @@ function SignUp() {
 
   const mutation = useMutation({
     mutationFn: signUp,
-    onSuccess: () => {
-      <Navigate to={'/peliculas'} />;
-    },
     onError: (error) => {
       setError(authErrors[error.code] || error.code);
     },
@@ -51,6 +49,7 @@ function SignUp() {
           className="form-control"
           id="nombreUsuario"
           ref={nombreUsuarioRef}
+          autoComplete="on"
         />
       </div>
       <div className={styles.input}>
@@ -64,6 +63,7 @@ function SignUp() {
           className="form-control"
           id="email"
           ref={emailRef}
+          autoComplete="on"
         />
       </div>
       <div className={styles.input}>
@@ -74,10 +74,11 @@ function SignUp() {
         <input
           type="password"
           required
-          minLength="4"
+          minLength="6"
           className="form-control"
           id="password"
           ref={passwordRef}
+          autoComplete="off"
         />
       </div>
       <div className={styles.input}>
@@ -87,20 +88,23 @@ function SignUp() {
         <input
           type="password"
           required
-          minLength="4"
+          minLength="6"
           className="form-control"
           id="passwordConfirm"
           ref={passwordConfirmRef}
+          autoComplete="off"
         />
       </div>
-      
+
       <div className={styles.btnLink}>
-        <span> ¿Ya tiene una cuenta? 
+        <span>
+          {' '}
+          ¿Ya tiene una cuenta?
           <Link className={styles.signup} to="/">
             {' Ingresar'}
           </Link>
         </span>
-        
+
         <button
           type="submit"
           className={styles.btn}

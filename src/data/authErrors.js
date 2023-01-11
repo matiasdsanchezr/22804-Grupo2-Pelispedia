@@ -78,7 +78,7 @@ const authErrors = {
   'auth/admin-restricted-operation':
     'This operation is restricted to administrators only.',
   'auth/app-not-authorized':
-    "This app, identified by the domain where it's hosted, is not authorized to use Firebase Authentication with the provided API key. Review your key configuration in the Google API console.",
+    'This app, identified by the domain where it\'s hosted, is not authorized to use Firebase Authentication with the provided API key. Review your key configuration in the Google API console.',
   'auth/app-not-installed':
     'The requested mobile application corresponding to the identifier (Android package name or iOS bundle ID) provided is not installed on this device.',
   'auth/captcha-check-failed':
@@ -102,7 +102,7 @@ const authErrors = {
   'auth/email-already-in-use':
     'The email address is already in use by another account.',
   'auth/emulator-config-failed':
-    "Auth instance has already been used to make a network call. Auth can no longer be configured to use the emulator. Try calling 'connectAuthEmulator()' sooner.",
+    'Auth instance has already been used to make a network call. Auth can no longer be configured to use the emulator. Try calling \'connectAuthEmulator()\' sooner.',
   'auth/expired-action-code': 'The action code has expired.',
   'auth/cancelled-popup-request':
     'This operation has been cancelled due to another conflicting popup being opened.',
@@ -112,7 +112,7 @@ const authErrors = {
   'auth/invalid-app-id':
     'The mobile app identifier is not registed for the current project.',
   'auth/invalid-user-token':
-    "This user's credential isn't valid for this project. This can happen if the user's token has been tampered with, or if the user isn't for the project associated with this API key.",
+    'This user\'s credential isn\'t valid for this project. This can happen if the user\'s token has been tampered with, or if the user isn\'t for the project associated with this API key.',
   'auth/invalid-auth-event': 'An internal AuthError has occurred.',
   'auth/invalid-verification-code':
     'The SMS verification code used to create the phone auth credential is invalid. Please resend the verification code sms and be sure to use the verification code provided by the user.',
@@ -155,7 +155,7 @@ const authErrors = {
     'The email template corresponding to this action contains an invalid sender email or name. Please fix by going to the Auth email templates section in the Firebase Console.',
   'auth/invalid-verification-id':
     'The verification ID used to create the phone auth credential is invalid.',
-  'auth/invalid-tenant-id': "The Auth instance's tenant ID is invalid.",
+  'auth/invalid-tenant-id': 'The Auth instance\'s tenant ID is invalid.',
   'auth/missing-android-pkg-name':
     'An Android Package Name must be provided if the Android App is required to be installed.',
   'auth/auth-domain-config-required':
@@ -195,7 +195,7 @@ const authErrors = {
   'auth/operation-not-allowed':
     'The given sign-in provider is disabled for this Firebase project. Enable it in the Firebase console, under the sign-in method tab of the Auth section.',
   'auth/operation-not-supported-in-this-environment':
-    "This operation is not supported in the environment this application is running on. 'location.protocol' must be http, https or chrome-extension and web storage must be enabled.",
+    'This operation is not supported in the environment this application is running on. \'location.protocol\' must be http, https or chrome-extension and web storage must be enabled.',
   'auth/popup-blocked':
     'Unable to establish a connection with the popup. It may have been blocked by the browser.',
   'auth/popup-closed-by-user':
@@ -203,7 +203,7 @@ const authErrors = {
   'auth/provider-already-linked':
     'User can only be linked to one identity for the given provider.',
   'auth/quota-exceeded':
-    "The project's quota for this operation has been exceeded.",
+    'The project\'s quota for this operation has been exceeded.',
   'auth/redirect-cancelled-by-user':
     'The redirect operation has been cancelled by the user before finalizing.',
   'auth/redirect-operation-pending':
@@ -215,10 +215,10 @@ const authErrors = {
   'auth/maximum-second-factor-count-exceeded':
     'The maximum allowed number of second factors on a user has been exceeded.',
   'auth/tenant-id-mismatch':
-    "The provided tenant ID does not match the Auth instance's tenant ID",
+    'The provided tenant ID does not match the Auth instance\'s tenant ID',
   'auth/timeout': 'The operation has timed out.',
   'auth/user-token-expired':
-    "The user's credential is no longer valid. The user must sign in again.",
+    'The user\'s credential is no longer valid. The user must sign in again.',
   'auth/too-many-requests':
     'We have blocked all requests from this device due to unusual activity. Try again later.',
   'auth/unauthorized-continue-uri':

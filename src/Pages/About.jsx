@@ -1,13 +1,11 @@
-import React from 'react';
+import { Helmet } from 'react-helmet-async';
+import { FaGithub, FaLinkedin } from 'react-icons/fa';
 import ScrollToTop from 'react-scroll-to-top';
 
+import { aboutInfo } from '../data/about';
 import styles from '../Styles/About.module.css';
 
-import { FaLinkedin, FaGithub } from 'react-icons/fa';
-import { Helmet } from 'react-helmet-async';
-import { aboutInfo } from '../data/about';
-
-// function About: página acerca del proyecto, comisión, integrantes, etc.
+// Function About: página acerca del proyecto, comisión, integrantes, etc.
 export default function About() {
   return (
     <>
@@ -24,56 +22,54 @@ export default function About() {
           Gisela Flores.
         </p>
         <section className={styles.container_cards}>
-          {aboutInfo.map((e) => {
-            return (
-              // Card
-              <figure className={styles.figure} key={e.name}>
-                {/* si no hay imagen carga imagen-default*/}
-                {e.imagen ? (
-                  <img
-                    className={styles.img}
-                    src={e.imagen}
-                    alt={`foto de ${e.name}`}
-                  />
+          {aboutInfo.map((e) => (
+            // Card
+            <figure className={styles.figure} key={e.name}>
+              {/* Si no hay imagen carga imagen-default*/}
+              {e.imagen ? (
+                <img
+                  className={styles.img}
+                  src={e.imagen}
+                  alt={`foto de ${e.name}`}
+                />
+              ) : (
+                <img
+                  className={styles.img}
+                  src="./photo-user.png"
+                  alt="photoUser"
+                />
+              )}
+
+              <div className={styles.container_text}>
+                <p className={styles.name}>{e.name}</p>
+                <p className={styles.profession}>{e.profesion}</p>
+                <p className={styles.description}>{e.descripcion}</p>
+              </div>
+              <div className={styles.social}>
+                {e.social.linkedin.length > 0 ? (
+                  <a href={e.social.linkedin} target="_black">
+                    <FaLinkedin
+                      size={30}
+                      color="black"
+                      style={{ marginRight: '4rem' }}
+                    />
+                  </a>
                 ) : (
-                  <img
-                    className={styles.img}
-                    src="./photo-user.png"
-                    alt="photoUser"
-                  />
+                  ''
                 )}
 
-                <div className={styles.container_text}>
-                  <p className={styles.name}>{e.name}</p>
-                  <p className={styles.profession}>{e.profesion}</p>
-                  <p className={styles.description}>{e.descripcion}</p>
-                </div>
-                <div className={styles.social}>
-                  {e.social.linkedin.length > 0 ? (
-                    <a href={e.social.linkedin} target="_black">
-                      <FaLinkedin
-                        size={30}
-                        color="black"
-                        style={{ marginRight: '4rem' }}
-                      />
-                    </a>
-                  ) : (
-                    ''
-                  )}
-
-                  {/* si hay link de github se coloca el icono */}
-                  {e.social.github.length > 0 ? (
-                    <a href={e.social.github} target="_black">
-                      <FaGithub size={30} color="black" />
-                    </a>
-                  ) : (
-                    ''
-                  )}
-                </div>
-              </figure>//fin card
-            );
-          })}
-          {/* botton de to top */}
+                {/* Si hay link de github se coloca el icono */}
+                {e.social.github.length > 0 ? (
+                  <a href={e.social.github} target="_black">
+                    <FaGithub size={30} color="black" />
+                  </a>
+                ) : (
+                  ''
+                )}
+              </div>
+            </figure> // fin card
+          ))}
+          {/* Boton "to top" */}
           <ScrollToTop
             smooth
             style={{

@@ -1,57 +1,30 @@
-import React, { useEffect, useState } from 'react';
+import html2canvas from 'html2canvas';
+import { Animated } from 'react-animated-css';
 import { Helmet } from 'react-helmet-async';
 import { useParams } from 'react-router-dom';
-import {
-  obtenerPosterPelicula,
-  obtenerBackdropPelicula,
-} from '../Services/obtenerPosterPelicula';
-import { get } from '../Services/httpClient';
-
-import html2canvas from 'html2canvas';
-
-import styles from '../Styles/DetallePelicula.module.css';
-
-import { Animated } from 'react-animated-css';
 
 import { Loader } from '../Components/Loader';
-import TrailerPelicula from '../Components/TrailerPelicula';
 import RedesSocialesPeliculas from '../Components/RedesSocialesPeliculas';
 import ReviewPeliculas from '../Components/ReviewPeliculas';
-
+import TrailerPelicula from '../Components/TrailerPelicula';
+import { useGetMovieById } from '../Hooks/movies.hooks';
+import {
+  obtenerBackdropPelicula,
+  obtenerPosterPelicula,
+} from '../Services/obtenerPosterPelicula';
+import styles from '../Styles/DetallePelicula.module.css';
 
 export function DetallePelicula() {
   const { idPelicula } = useParams();
-  const [cargando, setCargando] = useState(true);
-  const [pelicula, setPelicula] = useState(null);
 
-  //Renderiza los datos de la petición cada vez que se actualiza el estado de idPelicula
-  useEffect(() => {
-    const controller = new AbortController();
-    setCargando(true);
-    get('/movie/' + idPelicula + '?language=es-MX', controller)
-      .then((datos) => {
-        setPelicula(datos);
-        setCargando(false);
-      })
-      .catch((e) => {
-        console.log(e);
-      });
+  // Cargar datos de la pelicula usando un custom hook con React Query
+  const { data: pelicula, isLoading, isFetching } = useGetMovieById(idPelicula);
 
-    return () => {
-      controller.abort();
-    };
-  }, [idPelicula]);
+  if (isLoading || isFetching) return <Loader />;
 
-  if (cargando) {
-    return <Loader />;
-  }
+  if (!pelicula) return null;
 
-  if (!pelicula) {
-    return null;
-  }
-  
-  // html2canvas
-  //Función que le permite al usuario descargar la información de la pelicula
+  // html2canvas - Función que le permite al usuario descargar la información de la pelicula
   const descargarInfo = () => {
     html2canvas(document.getElementById('infoDescargar'), {
       backgroundColor: '#333333',
@@ -64,9 +37,9 @@ export function DetallePelicula() {
       link.crossOrigin = 'true';
       link.click();
     });
-  }; //fin html2canvas
+  };
 
-  // rutas imagenes
+  // Rutas imagenes
   const imgUrl = obtenerPosterPelicula(pelicula.poster_path, 500);
   const backdropUrl = obtenerBackdropPelicula(pelicula.backdrop_path, 500);
 
@@ -86,7 +59,7 @@ export function DetallePelicula() {
             backgroundRepeat: 'no-repeat',
             backgroundPosition: 'center center',
           }}
-        ></div>
+        />
         <div className={styles.contenedor}>
           <figure>
             <Animated

@@ -1,39 +1,31 @@
-import React from 'react';
+import { useCallback } from 'react';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import Offcanvas from 'react-bootstrap/Offcanvas';
 import { FiLogOut } from 'react-icons/fi';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+
 import { useAuth } from '../Contexts/AuthContext';
-import { Link } from 'react-router-dom';
-import { getUserById } from '../Services/userService';
-import Search from './Search';
+import { useUserInfo } from '../Hooks/user.hooks';
 import styles from '../Styles/Navbar.module.css';
-import { useQuery } from '@tanstack/react-query';
+import Search from './Search';
 
 function OffcanvasExample() {
   const { signOut, currentUser } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogOut = () => {
+  const onClickLogout = useCallback(() => {
     signOut();
     navigate('/login');
-  };
+  }, [navigate, signOut]);
 
-  const fetchUserInfo = async () => {
-    return currentUser
-      ? await getUserById(currentUser.uid).then((result) => result)
-      : { userNombre: 'usuario' };
-  };
-  const userInfoQuery = useQuery({
-    queryKey: ['userInfo'],
-    queryFn: fetchUserInfo,
-    onError: (e) => {
-      console.log(e);
-    },
-  });
+  const onClickProfile = useCallback(() => {
+    navigate('/profile');
+  }, [navigate]);
+
+  const { data: userInfo, isLoading } = useUserInfo();
 
   return (
     <>
@@ -71,7 +63,7 @@ function OffcanvasExample() {
                   id={`offcanvasNavbar-expand-${expand}`}
                   aria-labelledby={`offcanvasNavbarLabel-expand-${expand}`}
                   placement="end"
-                  className={`text-white bg-opacity-75 bg-black`}
+                  className={'text-white bg-opacity-75 bg-black'}
                 >
                   <Offcanvas.Header closeButton className={`${styles.menu}`}>
                     <Offcanvas.Title
@@ -98,15 +90,14 @@ function OffcanvasExample() {
                         id={`offcanvasNavbarDropdown-expand-${expand}`}
                       >
                         <NavDropdown.Item
-                          href="/profile"
                           className={`${styles.nombre} pl-1 text-light fw-semibold text-capitalize fs-5`}
+                          onClick={onClickProfile}
                         >
-                          {!userInfoQuery.isLoading &&
-                            userInfoQuery.data.userNombre}
+                          {!isLoading && userInfo.userNombre}
                         </NavDropdown.Item>
                         <NavDropdown.Divider />
                         <NavDropdown.Item
-                          onClick={handleLogOut}
+                          onClick={onClickLogout}
                           className={`${styles.logOut} pl-1 text-light`}
                         >
                           Log out <FiLogOut />

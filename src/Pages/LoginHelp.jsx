@@ -1,65 +1,45 @@
-import styles from "../Styles/LoginHelp.module.css";
-import React, { useRef, useReducer } from "react";
-import { Link } from "react-router-dom";
-import { useAuth } from "../Contexts/AuthContext";
+import { useMutation } from '@tanstack/react-query';
+import { useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
+import Swal from 'sweetalert2';
+
+import { useAuth } from '../Contexts/AuthContext';
+import authErrors from '../data/authErrors';
+import styles from '../Styles/LoginHelp.module.css';
 
 const LoginHelp = () => {
   const emailRef = useRef();
   const { resetPassword } = useAuth();
+  const [error, setError] = useState();
 
-  //De acuerdo a la acción que se este realizando en la petición de resetear password se modificará o no(si hay error) el estado del resetPassword
-  const reducer = (state, action) => {
-    switch (action.type) {
-      case "RESET_PASSWORD_START":
-        return {
-          errors: null,
-          isLoading: true,
-        };
-      case "RESET_PASSWORD_SUCCESS":
-        return {
-          errors: null,
-          isLoading: false,
-        };
-      case "RESET_PASSWORD_FAILED":
-        return {
-          errors:
-            action.error === "auth/user-not-found"
-              ? "Email no registrado"
-              : "Error al recuperar contraseña",
-          isLoading: false,
-        };
-      default:
-        console.log("action.type no registrado");
-    }
-  };
+  // Hook que nos ayuda a manejar los estados de la petición(success, error or pending)
+  const mutation = useMutation({
+    mutationFn: resetPassword,
+    onError: (error) => setError(authErrors[error.code] || error.code),
+    onSuccess: () => {
+      Swal.fire({
+        title: 'Cambio de contraseña',
+        html: 'Se envio un correo para recuperar la cuenta',
+        icon: 'success',
+        confirmButtonText: 'Aceptar',
+      });
+    },
+  });
 
-  const [state, dispatch] = useReducer(reducer, {});
-
-  //Funcion que permite generar las acciones para resetear el estado del password(start, success or error)
-  const handleSubmit = async (e) => {
+  // Captura los datos ingresados en el form y los settea a las const de email y password
+  const onSubmitHandler = async (e) => {
     e.preventDefault();
-    dispatch({
-      type: "RESET_PASSWORD_START",
+    mutation.mutate({
+      email: emailRef.current.value,
     });
-    try {
-      await resetPassword(emailRef.current.value);
-      dispatch({
-        type: "RESET_PASSWORD_SUCCESS",
-      });
-    } catch (error) {
-      dispatch({
-        type: "RESET_PASSWORD_FAILED",
-        error: error.code,
-      });
-    }
   };
 
   return (
-    <form className={styles.form} onSubmit={handleSubmit}>
+    <form className={styles.form} onSubmit={onSubmitHandler}>
       <h2 className={styles.title}>Inicia Sesión</h2>
-      {state.errors && <p>{state.errors}</p>}
+      {error && <p>{error}</p>}
       <div className={styles.inputGroup}>
-        <label htmlFor="exampleInputEmail1" className="form-label">
+        <label htmlFor="email" className="form-label">
           Email
         </label>
         <input
@@ -67,14 +47,18 @@ const LoginHelp = () => {
           ref={emailRef}
           className="form-control"
           required
-          id="exampleInputEmail1"
+          id="email"
         />
       </div>
-      <button type="submit" className={styles.btn} disabled={state.isLoading}>
+      <button
+        type="submit"
+        className={styles.btn}
+        disabled={mutation.isLoading}
+      >
         Cambiar
       </button>
       <Link className={styles.loginLink} to="/login">
-        {"Volver"}
+        {'Volver'}
       </Link>
     </form>
   );

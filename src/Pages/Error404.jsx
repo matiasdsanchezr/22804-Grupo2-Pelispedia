@@ -1,10 +1,9 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+import { Link } from 'react-router-dom';
 
 import styles from '../Styles/Error404.module.css';
 
-//Renderiza una página 404 diseñada para el usuario con información de lo ocurrido en caso de error y redirección a pagina principal
+// Renderiza una página 404 diseñada para el usuario con información de lo ocurrido en caso de error y redirección a pagina principal
 // Function Error404 : devuelve la página correspondiente al error 404, page not found
 export default function Error404() {
   return (

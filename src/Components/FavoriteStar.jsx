@@ -1,8 +1,10 @@
-import { FaStar } from "react-icons/fa";
-import styles from "../Styles/PeliculasCard.module.css";
+import PropTypes from 'prop-types';
+import { FaStar } from 'react-icons/fa';
+
+import styles from '../Styles/PeliculasCard.module.css';
 
 export const FavoriteStar = ({ active, onClick }) => {
-  const color = active ? "#ffeb66" : "#e0e0e0";
+  const color = active ? '#ffeb66' : '#e0e0e0';
   return (
     <>
       <FaStar
@@ -13,4 +15,9 @@ export const FavoriteStar = ({ active, onClick }) => {
       />
     </>
   );
+};
+
+FavoriteStar.propTypes = {
+  active: PropTypes.bool.isRequired,
+  onClick: PropTypes.func.isRequired,
 };

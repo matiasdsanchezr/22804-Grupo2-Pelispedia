@@ -1,30 +1,17 @@
-import React, { useEffect } from 'react';
+// import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+
 import { Loader } from '../Components/Loader';
+import { useMovieTrailer } from '../Hooks/movies.hooks';
 import styles from '../Styles/TrailerPelicula.module.css';
-import { get } from '../Services/httpClient';
-import { useQuery } from '@tanstack/react-query';
 
 export default function TrailerPelicula() {
   const { idPelicula } = useParams();
-  // const [trailer, setTrailer] = useState(null);
 
-  const fetchMovieTrailer = async () => {
-    const enTrailer = await get('/movie/' + idPelicula + '/videos');
-    const esTrailer = await get(`/movie/${idPelicula}/videos?language=es-MX`);
-    if (esTrailer.results.length > 0) return esTrailer;
-    else return enTrailer;
-  };
-  const { data, isLoading, refetch } = useQuery({
-    queryKey: ['trailer'],
-    queryFn: fetchMovieTrailer,
-  });
+  // Cargar trailer en español o ingles segun disponibilidad
+  const { data, isLoading, isFetching } = useMovieTrailer(idPelicula);
 
-  useEffect(() => {
-    refetch();
-  }, [idPelicula, refetch]);
-
-  if (isLoading) return <Loader />;
+  if (isLoading || isFetching) return <Loader />;
 
   if (!data) return null;
 
@@ -37,7 +24,7 @@ export default function TrailerPelicula() {
           allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
           title={data.results[0].name}
-        ></iframe>
+        />
       </div>
     )
   );

@@ -1,61 +1,51 @@
-import React, { useEffect } from 'react';
+import { faCircleUser } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Loader } from './Loader';
+
+import { useReviews } from '../Hooks/movies.hooks';
 import styles from '../Styles/ReviewPeliculas.module.css';
-import { get } from '../Services/httpClient';
-import { useQuery } from '@tanstack/react-query';
+import { Loader } from './Loader';
 
-export default function TrailerPelicula() {
+export default function ReviewPeliculas() {
   const { idPelicula } = useParams();
+  const [invalidImg, setInvalidImage] = useState(false);
 
-  //Renderiza cada vez que se actualiza el id de pelicula para mostrar su información(poster, puntuación y reseña)
-  const fetchMovieReview = async () => {
-    const enReview = await get('/movie/' + idPelicula + '/reviews');
-    const esReview = await get(`/movie/${idPelicula}/reviews?language=es-MX`);
-    if (esReview.results.length > 0) return esReview;
-    else return enReview;
-  };
-  const { data, isLoading, refetch } = useQuery({
-    queryKey: ['review'],
-    queryFn: fetchMovieReview,
-  });
+  // Renderiza cada vez que se actualiza el id de pelicula para mostrar su información(poster, puntuación y reseña)
+  const { data, isLoading, isFetching } = useReviews(idPelicula);
 
-  useEffect(() => {
-    refetch();
-  }, [idPelicula, refetch]);
-
-  if (isLoading) return <Loader />;
-
-  if (!data) {
-    return null;
-  }
+  if (isLoading || isFetching) return <Loader />;
+  if (!data || data.results.length < 1) return null;
 
   return (
-    data.results.length > 0 && (
-      <div className={styles.container}>
-        <div className={styles.row1}>
-          <p>
+    <div className={styles.container}>
+      <div className={styles.row1}>
+        <p className={styles.authorLine}>
+          {invalidImg ? (
+            <FontAwesomeIcon icon={faCircleUser} className={styles.imgAvatar} />
+          ) : (
             <img
               src={`https://www.themoviedb.org/t/p/w45_and_h45_face/${data.results[0].author_details.avatar_path}`}
               alt="usuario"
               className={styles.imgAvatar}
+              onError={() => setInvalidImage(true)}
             />
-            {data.results[0].author_details.username}
-          </p>
-          {data.results[0].author_details.rating != null && (
-            <p className={styles.puntuacion}>
-              Puntuación:{' '}
-              <span className={styles.rating}>
-                {data.results[0].author_details.rating}
-              </span>
-            </p>
           )}
-        </div>
-        <p>Reseña: </p>
-        <div className={styles.review}>
-          <p>{data.results[0].content}</p>
-        </div>
+          {data.results[0].author_details.username}
+        </p>
+        {data.results[0].author_details.rating != null && (
+          <p className={styles.puntuacion}>
+            Puntuación:{' '}
+            <span className={styles.rating}>
+              {data.results[0].author_details.rating}
+            </span>
+          </p>
+        )}
       </div>
-    )
+      <p>Reseña: </p>
+      <div className={styles.review}>
+        <p>{data.results[0].content}</p>
+      </div>
+    </div>
   );
 }

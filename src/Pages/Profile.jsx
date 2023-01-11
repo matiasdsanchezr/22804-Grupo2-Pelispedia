@@ -1,92 +1,36 @@
-import React, { useState, useEffect } from 'react';
-import styles from '../Styles/Profile.module.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleUser } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import PropTypes from 'prop-types';
+import { useCallback, useState } from 'react';
+
 import { useAuth } from '../Contexts/AuthContext';
-import { getUserById } from '../Services/userService';
-import { useQuery } from '@tanstack/react-query';
+import { useUserInfo } from '../Hooks/user.hooks';
+import styles from '../Styles/Profile.module.css';
 
 const Profile = () => {
   const [showAlert, setShowAlert] = useState(false);
   const { currentUser } = useAuth();
 
-  const EmailAlert = ({ onClose, onSubmit }) => (
-    <div className={styles.alertContainer}>
-      <form className={styles.alert} onSubmit={onSubmit}>
-        <div className={styles.inputGroup}>
-          <span>Ingresa tu nuevo email:</span>
-          <input className={styles.alertInput} type="email" />
-        </div>
-
-        <div className={styles.alertButtonsContainer}>
-          <button className={styles.alertButton} onClick={onClose}>
-            Cambiar
-          </button>
-          <button className={styles.alertButton} onClick={onClose}>
-            Volver
-          </button>
-        </div>
-      </form>
-    </div>
-  );
-
-  const PasswordAlert = ({ onClose, onSubmit }) => (
-    <div className={styles.alertContainer}>
-      <form className={styles.alert} onSubmit={onSubmit}>
-        <div className={styles.inputGroup}>
-          <label htmlFor="password">Ingresa tu nueva contraseña:</label>
-          <input className={styles.alertInput} type="password" id="password" />
-        </div>
-
-        <div className="inputGroup">
-          <label htmlFor="password">Confirma tu nueva contraseña:</label>
-          <input className={styles.alertInput} type="password" />
-        </div>
-
-        <div className={styles.alertButtonsContainer}>
-          <button className={styles.alertButton} onClick={onClose}>
-            Cambiar
-          </button>
-          <button className={styles.alertButton} onClick={onClose}>
-            Volver
-          </button>
-        </div>
-      </form>
-    </div>
-  );
-
-  const fetchUserInfo = async () => {
-    return currentUser
-      ? await getUserById(currentUser.uid).then((result) => result)
-      : { userNombre: 'usuario' };
-  };
-
-  const { data, isLoading } = useQuery({
-    queryKey: ['userInfo'],
-    queryFn: fetchUserInfo,
-    onError: (e) => {
-      console.log(e);
-    },
-  });
-
-  const handleOnClose = (e) => {
-    e.preventDefault();
-    setShowAlert(false);
-  };
-
-  const handleOnSubmit = (e) => {
-    e.preventDefault();
-    setShowAlert(false);
-  };
-
-  const showChangeEmailAlert = () => {
-    setShowAlert('CHANGE_EMAIL');
-  };
-
-  const showChangePasswordAlert = () => {
-    setShowAlert('CHANGE_PASSWORD');
-  };
   // Obtengo los datos del usuario
+  const { data, isLoading } = useUserInfo();
+
+  const handleOnClose = useCallback((e) => {
+    e.preventDefault();
+    setShowAlert(false);
+  }, []);
+
+  const handleOnSubmit = useCallback((e) => {
+    e.preventDefault();
+    setShowAlert(false);
+  }, []);
+
+  const showChangeEmailAlert = useCallback(() => {
+    setShowAlert('CHANGE_EMAIL');
+  }, []);
+
+  const showChangePasswordAlert = useCallback(() => {
+    setShowAlert('CHANGE_PASSWORD');
+  }, []);
 
   return (
     <>
@@ -121,6 +65,61 @@ const Profile = () => {
       )}
     </>
   );
+};
+
+const EmailAlert = ({ onClose, onSubmit }) => (
+  <div className={styles.alertContainer}>
+    <form className={styles.alert} onSubmit={onSubmit}>
+      <div className={styles.inputGroup}>
+        <span>Ingresa tu nuevo email:</span>
+        <input className={styles.alertInput} type="email" />
+      </div>
+
+      <div className={styles.alertButtonsContainer}>
+        <button className={styles.alertButton} onClick={onClose}>
+          Cambiar
+        </button>
+        <button className={styles.alertButton} onClick={onClose}>
+          Volver
+        </button>
+      </div>
+    </form>
+  </div>
+);
+
+EmailAlert.propTypes = {
+  onClose: PropTypes.func.isRequired,
+  onSubmit: PropTypes.func.isRequired,
+};
+
+const PasswordAlert = ({ onClose, onSubmit }) => (
+  <div className={styles.alertContainer}>
+    <form className={styles.alert} onSubmit={onSubmit}>
+      <div className={styles.inputGroup}>
+        <label htmlFor="password">Ingresa tu nueva contraseña:</label>
+        <input className={styles.alertInput} type="password" id="password" />
+      </div>
+
+      <div className="inputGroup">
+        <label htmlFor="password">Confirma tu nueva contraseña:</label>
+        <input className={styles.alertInput} type="password" />
+      </div>
+
+      <div className={styles.alertButtonsContainer}>
+        <button className={styles.alertButton} onClick={onClose}>
+          Cambiar
+        </button>
+        <button className={styles.alertButton} onClick={onClose}>
+          Volver
+        </button>
+      </div>
+    </form>
+  </div>
+);
+
+PasswordAlert.propTypes = {
+  onClose: PropTypes.func.isRequired,
+  onSubmit: PropTypes.func.isRequired,
 };
 
 export default Profile;

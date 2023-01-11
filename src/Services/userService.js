@@ -1,19 +1,19 @@
-import { db } from '../firebase';
 import {
-  collection,
-  getDocs,
-  getDoc,
-  query,
-  doc,
   addDoc,
+  collection,
   deleteDoc,
+  doc,
+  getDoc,
+  getDocs,
+  query,
   where,
 } from 'firebase/firestore';
 
+import { db } from '../firebase';
+
 // addFavorito: agrega un doc en la colección favoritos con userId, peliId
-export const addFavorito = async (userId, peliId) => {
-  return addDoc(collection(db, 'favoritos'), { userId, peliId });
-};
+export const addFavorito = async (userId, peliId) =>
+  await addDoc(collection(db, 'favoritos'), { userId, peliId });
 
 // isFavorito: chequea que exista un doc en favoritos haciendo query con userId+peliId
 export const isFavorito = async (userId, peliId) => {
@@ -44,9 +44,10 @@ export const removeFavorito = async (userId, peliId) => {
   ];
   const queryFavoritos = query(collection(db, 'favoritos'), ...conditions);
   const favoritos = await getDocs(queryFavoritos);
-  favoritos.forEach(async (document) => {
-    await deleteDoc(doc(db, 'favoritos', document.id));
-  });
+  const promises = favoritos.docs.map(
+    async (favorite) => await deleteDoc(doc(db, 'favoritos', favorite.id))
+  );
+  return await Promise.all(promises);
 };
 
 // getUserById: devuelve de la colección usarios los datos del userId pasado como parámetro
@@ -54,6 +55,5 @@ export const getUserById = async (userId) => {
   const colRef = collection(db, 'usuarios');
   const response = await getDoc(doc(colRef, userId));
   const userInfo = response.data();
-  if (!userInfo.userNombre) userInfo.userNombre = 'Anonimo';
   return userInfo;
 };

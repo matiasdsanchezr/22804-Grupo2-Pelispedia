@@ -1,13 +1,13 @@
-import { useAuth } from '../Contexts/AuthContext';
 import { Navigate, Outlet } from 'react-router-dom';
-import NavBarCanvas from './NavbarCanvas';
-import Footer from './Footer';
 
+import { useAuth } from '../Contexts/AuthContext';
 import styles from '../Styles/App.module.css';
+import Footer from './Footer';
+import NavBarCanvas from './NavbarCanvas';
 
-const ProtectedRoute = ({ redirectPath = '/login' }) => {
+const ProtectedRoute = () => {
   const { currentUser } = useAuth();
-  if (!currentUser) return <Navigate to={redirectPath} replace={true} />;
+  if (!currentUser) return <Navigate to="/login" replace={true} />;
 
   return (
     <>

@@ -1,15 +1,15 @@
-import { useAuth } from '../Contexts/AuthContext';
 import { Navigate, Outlet } from 'react-router-dom';
-import NavBarCanvas from './NavbarCanvas';
-import Footer from './Footer';
 
+import { useAuth } from '../Contexts/AuthContext';
 import styles from '../Styles/App.module.css';
+import Footer from './Footer';
+import NavBarCanvas from './NavbarCanvas';
 
-const SignInRoute = ({ redirectPath = '/peliculas' }) => {
-  //Obtiene datos del usuario
+const SignInRoute = () => {
+  // Obtiene datos del usuario
   const { currentUser } = useAuth();
-  //Comprueba que exista ese usuario y de ser asi redirecciona a peliculas
-  if (currentUser) return <Navigate to={redirectPath} replace={true} />;
+  // Comprueba que exista ese usuario y de ser asi redirecciona a peliculas
+  if (currentUser) return <Navigate to="/peliculas" replace={true} />;
 
   return (
     <>

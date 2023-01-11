@@ -1,10 +1,10 @@
-import React, { useRef, useState } from 'react';
-import { Link, Navigate } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
-import styles from '../Styles/Login.module.css';
+import { useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 
 import { useAuth } from '../Contexts/AuthContext';
 import authErrors from '../data/authErrors';
+import styles from '../Styles/Login.module.css';
 
 const Login = () => {
   const emailRef = useRef();
@@ -12,15 +12,13 @@ const Login = () => {
   const { signIn } = useAuth();
   const [error, setError] = useState();
 
-  //Hook que nos ayuda a manejar los estados de la petición(success, error or pending)
+  // Hook que nos ayuda a manejar los estados de la petición(success, error or pending)
   const mutation = useMutation({
     mutationFn: signIn,
-    onError: (error) => {
-      return setError(authErrors[error.code] || error.code);
-    },
+    onError: (error) => setError(authErrors[error.code] || error.code),
   });
 
-  //Captura los datos ingresados en el form y los settea a las const de email y password
+  // Captura los datos ingresados en el form y los settea a las const de email y password
   const handleSubmit = async (e) => {
     e.preventDefault();
     mutation.mutate({
@@ -45,6 +43,7 @@ const Login = () => {
           required
           id="email"
           ref={emailRef}
+          autoComplete="true"
         />
       </div>
       <div className={styles.input}>
@@ -57,15 +56,17 @@ const Login = () => {
           className="form-control"
           id="password"
           ref={passwordRef}
+          autoComplete="true"
         />
       </div>
       <div className={styles.btnLink}>
-        <span> ¿Aún no posee una cuenta?
+        <span>
+          {' '}
+          ¿Aún no posee una cuenta?
           <Link className={styles.signup} to="/SignUp">
             {' Crear'}
           </Link>
         </span>
-        
         <Link className={styles.signup} to="/loginhelp">
           {'¿Olvidaste tu contraseña?'}
         </Link>

@@ -1,20 +1,19 @@
-import React, { useContext, useState } from 'react';
-import { auth } from '../firebase';
 import {
   createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
   sendPasswordResetEmail,
+  signInWithEmailAndPassword,
   updateEmail as authUpdateEmail,
   updatePassword as authUpdatePassword,
 } from 'firebase/auth';
-import { db } from '../firebase';
-import { setDoc, doc } from 'firebase/firestore';
+import { doc, setDoc } from 'firebase/firestore';
+import React, { useContext, useState } from 'react';
 import { Outlet } from 'react-router';
+
+import { auth, db } from '../firebase';
 
 const AuthContext = React.createContext();
 
 // Funciones para manejar el user context, variables de ambiente del usuario y datos en Firebase Authentication
-
 export function useAuth() {
   return useContext(AuthContext);
 }
@@ -28,10 +27,13 @@ export function AuthProvider() {
     setCurrentUser(user);
   });
 
-
   // SignUp: Firebase -> 1. crea un doc en Authentication (obteniendo userId) y 2. crea un doc en la colección usuarios con el mismo userId
   const signUp = async ({ email, password, userName }) => {
-    const res = await createUserWithEmailAndPassword(auth, email, password);
+    const res = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    ).then((user) => setCurrentUser(user));
     const user = res.user;
     await setDoc(doc(db, 'usuarios', user.uid), {
       userId: user.uid,
@@ -41,25 +43,19 @@ export function AuthProvider() {
     });
   };
 
-  const signIn = async ({ email, password }) => {
-    return await signInWithEmailAndPassword(auth, email, password);
-  };
+  const signIn = async ({ email, password }) =>
+    await signInWithEmailAndPassword(auth, email, password);
 
-  const signOut = async () => {
-    return auth.signOut().catch((e) => e);
-  };
+  const signOut = async () => await auth.signOut();
 
-  const resetPassword = async (email) => {
+  const resetPassword = async (email) =>
     await sendPasswordResetEmail(auth, email);
-  };
 
-  const updateEmail = async (email) => {
-    return authUpdateEmail(currentUser, email);
-  };
+  const updateEmail = async (email) =>
+    await authUpdateEmail(currentUser, email);
 
-  const updatePassword = async (password) => {
-    return authUpdatePassword(currentUser, password);
-  };
+  const updatePassword = async (password) =>
+    await authUpdatePassword(currentUser, password);
 
   const value = {
     currentUser,

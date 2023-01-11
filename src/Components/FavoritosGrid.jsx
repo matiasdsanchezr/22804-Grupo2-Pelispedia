@@ -1,74 +1,41 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { get } from '../Services/httpClient';
-import { PeliculaCard } from './PeliculaCard';
+// import { useQueryClient } from '@tanstack/react-query';
+
+import { useGetMoviesById } from '../Hooks/movies.hooks';
+import { useFavorites } from '../Hooks/user.hooks';
 import styles from '../Styles/PeliculasGrid.module.css';
 import { Loader } from './Loader';
-import { getFavorito } from '../Services/userService';
-import { useAuth } from '../Contexts/AuthContext';
+import { PeliculaCard } from './PeliculaCard';
 
 export const FavoritosGrid = () => {
-  const [peliculas, setPeliculas] = useState([]);
-  const [cargando, setCargando] = useState(true);
-  const { currentUser } = useAuth();
+  // const queryClient = useQueryClient();
 
-  //recibe por parámetro un ID de pelicula y obtiene los datos correspondientes a esa pelicula
-  const getPeliculaById = (id) => {
-    const controller = new AbortController();
-    const busquedaUrl = `/movie/${id}`;
-    return get(busquedaUrl, controller); //realiza un fetch a la api de peliculas para traer los datos de la peli
-  };
+  // Cargar IDs de los favoritos del usuario en Firebase
+  const { data: favoritesIds, isLoading, isSuccess } = useFavorites();
 
-  const getPeliculasFavoritas = useCallback(() => {
-    setCargando(true);
-    getFavorito(currentUser.uid).then((resultado) => {
-      //obtiene los favoritos correspondientes al usuario logueado
-      const idfavs = [...new Set(resultado)]; //evita guardar en el set duplicados
-      const promises = [];
-      const favs = [];
-      //recorre la lista de idfavs, llama a la funcion que obtiene toda la info correspondiente a ese ID, y lo guarda en favs
-      for (let i = 0; i < idfavs.length; i++) {
-        const peliId = idfavs[i];
-        promises.push(
-          getPeliculaById(peliId).then((pelicula) => {
-            favs.push(pelicula);
-          })
-        );
-      }
+  // Cargar detalles de las peliculas usando sus IDs
+  const peliculas = useGetMoviesById(isSuccess, favoritesIds);
 
-      //para poder controlar que el loading se apague cuando se hayan cumplido todas las promesas (todas las peliculas favoritas)
-      Promise.all(promises).then(
-        //objeto que permite controlar que los sets se ejecuten una vez que terminen todos los detalles de peliculas (promesas)
-        () => {
-          setPeliculas(favs);
-          setCargando(false);
-        }
-      );
-    });
-  }, [currentUser]);
+  if (isLoading || peliculas.some((query) => query.isLoading))
+    return <Loader />;
 
-  useEffect(() => {
-    getPeliculasFavoritas();
-  }, [getPeliculasFavoritas]);
-
-  if (!peliculas.length) {
+  if (!peliculas.length)
     return (
-      <div  className={styles.noFav}>
+      <div className={styles.noFav}>
         <h3>No hay películas en favoritos</h3>
       </div>
-    )
-  }
+    );
 
   return (
     <>
-      {cargando ?
-        <Loader />
-        :
-        <ul className={styles.peliculasGrid}>
-          {peliculas.map(pelicula =>
-            <PeliculaCard key={pelicula.id} pelicula={pelicula} favorite={true} onFavoriteClick={getPeliculasFavoritas} />
-          )}
-        </ul>
-      }
+      <ul className={styles.peliculasGrid}>
+        {peliculas.map((pelicula) => (
+          <PeliculaCard
+            key={pelicula.data.id}
+            pelicula={pelicula.data}
+            isFavorite={true}
+          />
+        ))}
+      </ul>
     </>
   );
-}
+};
